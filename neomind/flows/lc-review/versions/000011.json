@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "flowId": "lc-review",
+  "version": 11,
+  "name": "LeetCode Review",
+  "description": "Review of the user's own LeetCode solution: one reviewer covers the whole firmware checklist, a short auto-approved plan, a coach writes one Vietnamese hints-only report to <problem-dir>/review.md (newest on top), and an independent rules auditor (R1-R5) checks the file, sending it back to the coach on failure. Task: give the problem directory, e.g. c/hash/0217_contains-duplicate.",
+  "definition": {
+    "startNodeId": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "label": "Start",
+        "type": "start"
+      },
+      {
+        "id": "review",
+        "label": "Review (full checklist)",
+        "type": "agent_task",
+        "goal": "Review the named problem's solution and test file against the whole firmware checklist: run build_test once, counterexamples with traces, memory/integer safety, complexity from the code as written. No edits, no fixed code.",
+        "profileId": "lc-reviewer",
+        "profileVersion": 1,
+        "sessionGroup": "review-session",
+        "bindingId": "verifier",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "research-report"
+      },
+      {
+        "id": "plan",
+        "label": "Quick plan",
+        "type": "agent_task",
+        "goal": "Plan only (no edits): state the review.md path, the verdict, and the issues the report will cover by severity, in a few sentences. Scope: only <problem-dir>/review.md. Checks: list ONLY `git diff --check`. Never list tools/build_test.py as a check - it is expected to fail while the user's solution is wrong, and its output is evidence for the report, not a gate.",
+        "profileId": "lc-coach",
+        "profileVersion": 3,
+        "sessionGroup": "coach-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": false,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "plan"
+      },
+      {
+        "id": "approval",
+        "label": "Auto-approve writing review.md",
+        "type": "approval",
+        "purpose": "Approved automatically: the coach may write only <problem-dir>/review.md",
+        "mode": "auto"
+      },
+      {
+        "id": "coach",
+        "label": "Compose & write review.md",
+        "type": "agent_task",
+        "goal": "Turn the reviewer's findings into one verified Vietnamese review report (lc-hint-ladder format, symptom-level, first-rung hints only, no fix in words anywhere including the notes section) and write it to <problem-dir>/review.md (newest on top, keep older reviews). Keep Vietnamese diacritics intact (UTF-8). Change no other file.",
+        "profileId": "lc-coach",
+        "profileVersion": 3,
+        "sessionGroup": "coach-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": true,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [
+          "c",
+          "cpp"
+        ],
+        "outputContract": "code-artifacts"
+      },
+      {
+        "id": "repair",
+        "label": "Bounded repair",
+        "type": "repair_scope",
+        "targetReviewId": "audit",
+        "ownerNodeIds": [
+          "coach"
+        ],
+        "maxRounds": 2
+      },
+      {
+        "id": "audit",
+        "label": "Rules audit (R1-R5)",
+        "type": "review_group",
+        "targetNodeId": "coach",
+        "reviewers": [
+          {
+            "id": "rules-auditor",
+            "profileId": "lc-rules-auditor",
+            "profileVersion": 4,
+            "sessionGroup": "audit-session",
+            "required": true,
+            "scope": [
+              "."
+            ]
+          }
+        ],
+        "criteria": [
+          "only <problem-dir>/review.md changed; older reviews kept",
+          "R1 no solution code, algorithm or fix-in-words anywhere in the report",
+          "R2 one first-rung hint per issue and nothing else reveals more",
+          "R3 full firmware checklist covered",
+          "R4 no learning-status change",
+          "R5 no wrong claim (verify against the code; inability to run commands is not a failure)",
+          "report in Vietnamese"
+        ]
+      },
+      {
+        "id": "finish",
+        "label": "Finish",
+        "type": "finish"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "review",
+        "outcome": "completed"
+      },
+      {
+        "from": "review",
+        "to": "plan",
+        "outcome": "completed"
+      },
+      {
+        "from": "plan",
+        "to": "approval",
+        "outcome": "completed"
+      },
+      {
+        "from": "approval",
+        "to": "coach",
+        "outcome": "pass"
+      },
+      {
+        "from": "coach",
+        "to": "repair",
+        "outcome": "completed"
+      },
+      {
+        "from": "repair",
+        "to": "audit",
+        "outcome": "completed"
+      },
+      {
+        "from": "audit",
+        "to": "finish",
+        "outcome": "pass"
+      }
+    ],
+    "bindings": {
+      "implementer": {
+        "runner": {
+          "mode": "pinned",
+          "value": "claude-code"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "anthropic"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "claude-sonnet-5-5"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "medium"
+        },
+        "fallback": []
+      },
+      "verifier": {
+        "runner": {
+          "mode": "pinned",
+          "value": "claude-code"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "anthropic"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "claude-sonnet-5-5"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "medium"
+        },
+        "fallback": []
+      },
+      "auditor": {
+        "runner": {
+          "mode": "pinned",
+          "value": "claude-code"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "anthropic"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "claude-sonnet-5-5"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "high"
+        },
+        "fallback": []
+      }
+    },
+    "bindingDefaults": {},
+    "sessionGroups": [
+      {
+        "id": "review-session",
+        "bindingId": "verifier"
+      },
+      {
+        "id": "coach-session",
+        "bindingId": "implementer"
+      },
+      {
+        "id": "audit-session",
+        "bindingId": "auditor"
+      }
+    ],
+    "limits": {
+      "maxConcurrency": 2,
+      "maxRepairRounds": 2,
+      "activeTimeSeconds": 1800
+    },
+    "workspacePolicy": "isolated",
+    "outputContract": "code-changes-for-user-review",
+    "memoryDefaults": "role"
+  },
+  "layout": {},
+  "semanticHash": "d7f0886766de89a795a74dd992f3f20b597722b27cefeaa9f281535a5fb049f6",
+  "contentHash": "270b43f07c46c816bf4327769d0df2c8a9b0fc5f64c5698234a204c6c3891e6e",
+  "createdAt": "2026-11-12T02:39:30.262Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "8494749c-712b-461b-8d6c-e4e209d92117",
+    "reason": "Fix runner id: claude -> claude-code (Sonnet test requested by user)"
+  }
+}

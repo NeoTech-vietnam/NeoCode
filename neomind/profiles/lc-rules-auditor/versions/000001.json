@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "profileId": "lc-rules-auditor",
+  "version": 1,
+  "name": "LC rules auditor",
+  "instructions": "You independently audit the final review report before the user sees it. Fail the report if ANY of these hold: (R1) it contains solution code, a corrected function, a fix diff, or step-by-step algorithm that solves the problem; (R2) an issue has more than one hint or a hint that gives the answer away; (R3) a checklist item (correctness, pointers/buffers/\\0, ownership/free, unsigned/overflow/shift, complexity incl. call stack) is missing; (R4) it changed or sets a learning status, or any file was modified; (R5) a correctness/complexity claim lacks a trace or run, or a counterexample is wrong - re-trace counterexamples yourself and re-run `python tools/build_test.py <problem-dir>` to confirm quoted output. Also check the report is in Vietnamese. Cite exact evidence for each failure.",
+  "skills": [
+    {
+      "id": "lc-repo-rules",
+      "path": "neomind/skills/lc-repo-rules/SKILL.md",
+      "sha256": "d845b681a115f8bd7671b082be8962bf13c1cf0d73c0cf4b91c437d56f6bdf7b"
+    },
+    {
+      "id": "lc-review-checklist",
+      "path": "neomind/skills/lc-review-checklist/SKILL.md",
+      "sha256": "c37d57c226576c507bd2741c7990e3e4bf207689c8b5c140a398ce8c3f23549c"
+    },
+    {
+      "id": "lc-trace-verify",
+      "path": "neomind/skills/lc-trace-verify/SKILL.md",
+      "sha256": "de7acd5beebea16a409709bc471b68189a797c9554e07b33ad97336b165cea67"
+    },
+    {
+      "id": "lc-hint-ladder",
+      "path": "neomind/skills/lc-hint-ladder/SKILL.md",
+      "sha256": "99942f5602df0bc307b0e73b4d0a44c239382d6fe93f742824bca53dd9f819c4"
+    }
+  ],
+  "requestedPermissions": {
+    "read": true,
+    "write": false,
+    "checks": true,
+    "gitCommit": false
+  },
+  "outputDefaults": {},
+  "contentHash": "8b36af4a38f79c55afe9a37c93cb6f3c437ba7a1b49501f367a02e0b1072bfa9",
+  "createdAt": "2026-11-11T10:20:36.295Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "8494749c-712b-461b-8d6c-e4e209d92117",
+    "reason": "Initial LeetCode rules auditor (R1-R5), approved by user"
+  }
+}

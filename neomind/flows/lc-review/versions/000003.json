@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "flowId": "lc-review",
+  "version": 3,
+  "name": "LeetCode Review",
+  "description": "Review of the user's own LeetCode solution: 3 parallel specialist reviewers (correctness, memory/integer safety, complexity), a coach that writes one Vietnamese report with hints only, an independent rules audit (R1-R5), then the audited report is auto-approved and written to <problem-dir>/review.md (newest on top). Task: give the problem directory, e.g. c/hash/0217_contains-duplicate.",
+  "definition": {
+    "startNodeId": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "label": "Start",
+        "type": "start"
+      },
+      {
+        "id": "fork",
+        "label": "Split review",
+        "type": "fork"
+      },
+      {
+        "id": "correctness",
+        "label": "Correctness & edge cases",
+        "type": "agent_task",
+        "goal": "Review correctness of the named problem's solution: run build_test, find counterexamples with traces, propose LC_CHECK lines. No edits, no fixed code.",
+        "profileId": "lc-correctness-reviewer",
+        "profileVersion": 2,
+        "sessionGroup": "correctness-session",
+        "bindingId": "verifier",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "research-report"
+      },
+      {
+        "id": "memory",
+        "label": "Memory & integer safety",
+        "type": "agent_task",
+        "goal": "Review pointers/buffers/\\0, ownership/free and unsigned/overflow/shift issues of the named problem's solution, with sanitizer run if available. No edits, no fixed code.",
+        "profileId": "lc-memory-reviewer",
+        "profileVersion": 2,
+        "sessionGroup": "memory-session",
+        "bindingId": "verifier",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "research-report"
+      },
+      {
+        "id": "complexity",
+        "label": "Complexity",
+        "type": "agent_task",
+        "goal": "Derive time/space complexity incl. call stack of the named problem's solution against its constraints; name only the pattern family for a better bound. No edits, no fixed code.",
+        "profileId": "lc-complexity-reviewer",
+        "profileVersion": 2,
+        "sessionGroup": "complexity-session",
+        "bindingId": "verifier",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "research-report"
+      },
+      {
+        "id": "join",
+        "label": "Collect findings",
+        "type": "join",
+        "requiredBranches": [
+          "correctness",
+          "memory",
+          "complexity"
+        ]
+      },
+      {
+        "id": "coach",
+        "label": "Compose review report",
+        "type": "agent_task",
+        "goal": "Compose step (read-only): merge the three reviewers' findings into one verified Vietnamese review report (lc-hint-ladder format), symptom-level only, first-rung hints only. Output the full report. No edits.",
+        "profileId": "lc-coach",
+        "profileVersion": 2,
+        "sessionGroup": "coach-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "plan"
+      },
+      {
+        "id": "repair",
+        "label": "Bounded repair",
+        "type": "repair_scope",
+        "targetReviewId": "audit",
+        "ownerNodeIds": [
+          "coach"
+        ],
+        "maxRounds": 2
+      },
+      {
+        "id": "audit",
+        "label": "Rules audit (R1-R5)",
+        "type": "review_group",
+        "targetNodeId": "coach",
+        "reviewers": [
+          {
+            "id": "rules-auditor",
+            "profileId": "lc-rules-auditor",
+            "profileVersion": 2,
+            "sessionGroup": "audit-session",
+            "required": true,
+            "scope": [
+              "."
+            ]
+          }
+        ],
+        "criteria": [
+          "R1 no solution code, algorithm or fix-in-words anywhere in the report",
+          "R2 one first-rung hint per issue and nothing else reveals more",
+          "R3 full firmware checklist covered",
+          "R4 no file or learning-status change",
+          "R5 every claim backed by trace or run",
+          "report in Vietnamese"
+        ]
+      },
+      {
+        "id": "approval",
+        "label": "Auto-approve writing review.md",
+        "type": "approval",
+        "purpose": "The audited report is approved automatically so it is written to review.md right away",
+        "mode": "auto"
+      },
+      {
+        "id": "write",
+        "label": "Write review.md",
+        "type": "agent_task",
+        "goal": "Write step: write the audited report verbatim to <problem-dir>/review.md (create, or insert newest on top keeping older reviews). Change no other file.",
+        "profileId": "lc-coach",
+        "profileVersion": 2,
+        "sessionGroup": "coach-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": true,
+          "checks": false,
+          "gitCommit": false
+        },
+        "writeScopes": [
+          "c",
+          "cpp"
+        ],
+        "outputContract": "code-artifacts"
+      },
+      {
+        "id": "finish",
+        "label": "Finish",
+        "type": "finish"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "fork",
+        "outcome": "completed"
+      },
+      {
+        "from": "fork",
+        "to": "correctness",
+        "outcome": "completed"
+      },
+      {
+        "from": "fork",
+        "to": "memory",
+        "outcome": "completed"
+      },
+      {
+        "from": "fork",
+        "to": "complexity",
+        "outcome": "completed"
+      },
+      {
+        "from": "correctness",
+        "to": "join",
+        "outcome": "completed"
+      },
+      {
+        "from": "memory",
+        "to": "join",
+        "outcome": "completed"
+      },
+      {
+        "from": "complexity",
+        "to": "join",
+        "outcome": "completed"
+      },
+      {
+        "from": "join",
+        "to": "coach",
+        "outcome": "completed"
+      },
+      {
+        "from": "coach",
+        "to": "repair",
+        "outcome": "completed"
+      },
+      {
+        "from": "repair",
+        "to": "audit",
+        "outcome": "completed"
+      },
+      {
+        "from": "audit",
+        "to": "approval",
+        "outcome": "pass"
+      },
+      {
+        "from": "approval",
+        "to": "write",
+        "outcome": "pass"
+      },
+      {
+        "from": "write",
+        "to": "finish",
+        "outcome": "completed"
+      }
+    ],
+    "bindings": {
+      "implementer": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6-luna"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "medium"
+        },
+        "fallback": []
+      },
+      "verifier": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6-luna"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "medium"
+        },
+        "fallback": []
+      }
+    },
+    "bindingDefaults": {},
+    "sessionGroups": [
+      {
+        "id": "correctness-session",
+        "bindingId": "verifier"
+      },
+      {
+        "id": "memory-session",
+        "bindingId": "verifier"
+      },
+      {
+        "id": "complexity-session",
+        "bindingId": "verifier"
+      },
+      {
+        "id": "coach-session",
+        "bindingId": "implementer"
+      },
+      {
+        "id": "audit-session",
+        "bindingId": "verifier"
+      }
+    ],
+    "limits": {
+      "maxConcurrency": 3,
+      "maxRepairRounds": 2,
+      "activeTimeSeconds": 1800
+    },
+    "workspacePolicy": "isolated",
+    "outputContract": "code-changes-for-user-review",
+    "review": "human",
+    "memoryDefaults": "role"
+  },
+  "layout": {},
+  "semanticHash": "502848c49f8f489782c02115f31a12f1161ec7912e3786320ac8e779560ee88c",
+  "contentHash": "6a7056b111a8ec6aa644d7309a3769d7a2ca749582a709f6cdb49008b1629bd1",
+  "createdAt": "2026-11-11T10:37:34.258Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "8494749c-712b-461b-8d6c-e4e209d92117",
+    "reason": "Write audited report to <problem-dir>/review.md with auto-approval (user request); stricter no-leak audit; profiles v2"
+  }
+}

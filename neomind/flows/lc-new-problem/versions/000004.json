@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "flowId": "lc-new-problem",
+  "version": 4,
+  "name": "LeetCode New Problem",
+  "description": "Pick and scaffold one new LeetCode practice problem (never solves it): a short auto-approved plan resolves the task, the scaffolder runs tools/new_problem.py --fetch and writes the statement, examples and edge-case questions into notes.md and one LC_CHECK per example into test.c, then an independent auditor checks no-solution/no-hint rules and correctness. Task: a topic (e.g. two-pointers) and/or a problem (e.g. 125 valid-palindrome).",
+  "definition": {
+    "startNodeId": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "label": "Start",
+        "type": "start"
+      },
+      {
+        "id": "plan",
+        "label": "Pick problem (plan)",
+        "type": "agent_task",
+        "goal": "Plan only (no edits). First DO the resolution now: read README section 3 and list the directories under c/ and cpp/, then pick ONE concrete LeetCode problem per skill lc-new-problem section 1 (topic only -> first README starter for that topic not yet in the repo). The plan must name the concrete id, title, slug, topic and directory (e.g. c/two-pointers/0125_valid-palindrome/) and confirm it does not exist. Scope: exactly one entry, the literal string `c` (plan scope must be a directory that already exists; the new problem directory does not exist yet), never '.' and never the new directory itself. Checks: list ONLY these two literal commands with the concrete directory filled in, no placeholders and no angle-bracket characters anywhere: the gcc syntax check of that directory's test.c, e.g. `gcc -std=c11 -fsyntax-only -I tools c/two-pointers/0125_valid-palindrome/test.c`, and `git diff --check`. Never list tools/build_test.py: the empty stub reports TODO by design.",
+        "profileId": "lc-scaffolder",
+        "profileVersion": 1,
+        "sessionGroup": "planning-session",
+        "bindingId": "planner",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "plan"
+      },
+      {
+        "id": "approval",
+        "label": "Auto-approve scaffold",
+        "type": "approval",
+        "purpose": "Approved automatically: the scaffolder may create only the new c/<topic>/<id4>_<slug>/ directory",
+        "mode": "auto"
+      },
+      {
+        "id": "scaffold",
+        "label": "Scaffold problem",
+        "type": "agent_task",
+        "goal": "Create the planned problem directory with `python tools/new_problem.py <topic> <id> <slug> --fetch`, then complete notes.md (Problem, Constraints, Examples, Edge cases to consider as input questions) and test.c (one LC_CHECK per official example, results freed) exactly as skill lc-new-problem says. solution.c keeps only the signature, an empty body and the TODO marker. Run the two planned checks. Change no other file.",
+        "profileId": "lc-scaffolder",
+        "profileVersion": 1,
+        "sessionGroup": "scaffold-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": true,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [
+          "c"
+        ],
+        "outputContract": "code-artifacts"
+      },
+      {
+        "id": "repair",
+        "label": "Bounded repair",
+        "type": "repair_scope",
+        "targetReviewId": "audit",
+        "ownerNodeIds": [
+          "scaffold"
+        ],
+        "maxRounds": 2
+      },
+      {
+        "id": "audit",
+        "label": "Scaffold audit",
+        "type": "review_group",
+        "targetNodeId": "scaffold",
+        "reviewers": [
+          {
+            "id": "scaffold-auditor",
+            "profileId": "lc-scaffold-auditor",
+            "profileVersion": 1,
+            "sessionGroup": "audit-session",
+            "required": true,
+            "scope": [
+              "."
+            ]
+          }
+        ],
+        "criteria": [
+          "only the new problem directory with solution.c, test.c, notes.md was created; nothing else changed",
+          "R1 solution.c is only the LeetCode signature, empty body and TODO marker; no solution logic in test.c",
+          "R2 Pattern empty, no Hints section, no technique named; edge cases are input questions only",
+          "R4 no learning-status change (progress.md, README, notes.md Status line)",
+          "statement, constraints, examples and signature match the LeetCode problem",
+          "each LC_CHECK matches its example, sizes match, results freed, no assumed order (verify by reading; inability to run commands is not a failure)"
+        ]
+      },
+      {
+        "id": "finish",
+        "label": "Finish",
+        "type": "finish"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "plan",
+        "outcome": "completed"
+      },
+      {
+        "from": "plan",
+        "to": "approval",
+        "outcome": "completed"
+      },
+      {
+        "from": "approval",
+        "to": "scaffold",
+        "outcome": "pass"
+      },
+      {
+        "from": "scaffold",
+        "to": "repair",
+        "outcome": "completed"
+      },
+      {
+        "from": "repair",
+        "to": "audit",
+        "outcome": "completed"
+      },
+      {
+        "from": "audit",
+        "to": "finish",
+        "outcome": "pass"
+      }
+    ],
+    "bindings": {
+      "planner": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6-luna"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "xhigh"
+        },
+        "fallback": []
+      },
+      "implementer": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6-luna"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "xhigh"
+        },
+        "fallback": []
+      },
+      "auditor": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6-luna"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "xhigh"
+        },
+        "fallback": []
+      }
+    },
+    "bindingDefaults": {},
+    "sessionGroups": [
+      {
+        "id": "planning-session",
+        "bindingId": "planner"
+      },
+      {
+        "id": "scaffold-session",
+        "bindingId": "implementer"
+      },
+      {
+        "id": "audit-session",
+        "bindingId": "auditor"
+      }
+    ],
+    "limits": {
+      "maxConcurrency": 2,
+      "maxRepairRounds": 2,
+      "activeTimeSeconds": 1500
+    },
+    "workspacePolicy": "isolated",
+    "outputContract": "code-changes-for-user-review",
+    "memoryDefaults": "role"
+  },
+  "layout": {},
+  "semanticHash": "422d619d1d44b9a8eeba54476611c7e17486bb3d0b3af52b51bd9ec6f6f019c1",
+  "contentHash": "f564e4ba9eebdc00e16c853aed8990f89abbcb15d1b84e233291199d1e14f0cb",
+  "createdAt": "2026-11-12T06:25:14.496Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "e1fe5e9f-fa10-45f7-b4fe-0dee5327deae",
+    "reason": "Fix v3 block (plan scope must be an existing directory, the new problem dir does not exist): plan scope = c, scaffold writeScopes back to c; auto-fix authorized by user"
+  }
+}

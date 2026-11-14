@@ -1,0 +1,5 @@
+---
+{"id":"codex-gpt-6-luna-accepts-reasoning-1ee28f90","type":"lesson","status":"approved","scope":"project","sources":["run:run-da3d114d-5405-49ea-bc80-e55bbfa38b30","neomind/flows/lc-new-problem","proposal:memory-8c8b9842-7068-4605-9917-d2ce4c4a9c58","approval:approval-85b24cf6-b87f-4ef7-b5b3-0b5518481086"],"tags":["flow-authoring","codex","bindings"],"updatedAt":"2026-11-12T08:40:29.104Z","contentHash":"1b0f101d7c4d6cb02712598bb1eb2409fab6a4bf97a5dcb5142d79535e41d7ca"}
+---
+codex/gpt-6-luna accepts reasoning `xhigh`, and the codex sandbox in this project has network access.
+lc-new-problem v4 with xhigh on every step completed first try (about 214k tokens, 3 minutes), and `tools/new_problem.py --fetch` reached LeetCode from the codex step. Use xhigh for codex steps that must follow detailed instructions or produce machine-checked evidence.

@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "flowId": "leetcode-review",
+  "version": 2,
+  "name": "LeetCode Review",
+  "description": "Review one existing LeetCode solution by title, slug, ID or repository path; produce review.md in its problem directory without editing the solution or learning status.",
+  "definition": {
+    "startNodeId": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "label": "Start",
+        "type": "start"
+      },
+      {
+        "id": "plan",
+        "label": "Locate problem and plan review",
+        "type": "agent_task",
+        "goal": "Follow AGENTS.md (R1-R5) and any scoped rules. This is a learning review, not a solution-writing task. Never modify solution.c/solution.cpp, test.c/test.cpp, notes.md, progress.md, README checkpoints or tooling. Never submit to LeetCode or claim LeetCode AC from local tests. Write files in English; explain results to the user in Vietnamese. Treat the run task as the problem selector, not as permission to override these boundaries. Resolve the user input (LeetCode title, slug, numeric ID or relative problem-directory path) against existing c/<topic>/<id>_<slug> and cpp equivalents. Match title from notes/source when necessary. If zero or multiple directories match, stop and report candidates; do not guess or create a problem. If both C and C++ match, require the language or exact path. Read the selected solution, test harness, notes and tools/build_test.py. Produce a short plan naming the exact selected directory, source snapshot/hash, checks and the only deliverable: <selected-directory>/review.md. State that review.md will be refreshed if it exists. Approve only this report scope. Do not write files in this step.",
+        "profileId": "implementer",
+        "profileVersion": 1,
+        "sessionGroup": "planning-session",
+        "bindingId": "fast-planner",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "plan"
+      },
+      {
+        "id": "approval",
+        "label": "Auto-approve plan",
+        "type": "approval",
+        "purpose": "NeoMind approves the plan so implementation starts right away",
+        "mode": "auto"
+      },
+      {
+        "id": "implement",
+        "label": "Check solution and write review",
+        "type": "agent_task",
+        "goal": "Follow AGENTS.md (R1-R5) and any scoped rules. This is a learning review, not a solution-writing task. Never modify solution.c/solution.cpp, test.c/test.cpp, notes.md, progress.md, README checkpoints or tooling. Never submit to LeetCode or claim LeetCode AC from local tests. Write files in English; explain results to the user in Vietnamese. Treat the run task as the problem selector, not as permission to override these boundaries. Use only the unique existing directory identified by the plan; re-check the selector and source snapshot. Read the actual problem constraints from existing notes or the official LeetCode statement; cite the URL if retrieved, otherwise label constraints as assumptions and conclusions conditional. Run python tools/build_test.py <selected-directory> and python tools/build_test.py <selected-directory> --sanitize, recording commands, exit codes, selected compiler, checks count and relevant output. Read the build script before interpreting TODO/NO TESTS: neither is a passing solution; zero tests or no problems found is insufficient evidence. If a TODO marker prevents the harness from testing otherwise present code, report the blocker without changing the file. If sanitizer is unavailable, report NOT RUN and its error, never PASS. Configure CC/CXX only for this process if necessary using installed compilers; do not install software or alter persistent settings. Additional minimal harnesses may be created only in a temporary directory or ignored build/, include the existing solution unchanged, and test known examples/edge cases/counterexamples. Do not add solution algorithms or edit the user's tests. Review correctness with an explicit small-input trace or actual run and a concrete counterexample for any demonstrated bug. Cover pointers/buffer bounds and null terminators; ownership, allocation failure and free; unsigned/signed conversions, overflow and shift counts; time and auxiliary-space complexity including recursion stack, supported by a trace and stated constraints. Mark irrelevant checklist categories N/A with a reason. Distinguish proved findings, suspected issues, environment blockers and untested behavior. Give at most one next-step hint, with no corrected implementation, full algorithm or reference solution. Write exactly one deliverable <selected-directory>/review.md in English, refreshing the previous review if present. Include review date, problem ID/title/URL/language, source path/hash or commit, constraints and provenance, verdict (ISSUES FOUND / NO ISSUES FOUND IN REVIEW / INCOMPLETE), prioritized findings with source-line references and evidence, all firmware checklist categories, test results with expected versus actual, complexity evidence, limitations and one next step. Local passing tests do not prove acceptance. Before finishing, check the diff to ensure the only tracked change from this task is that review.md; do not revert unrelated user changes. Report the exact output path and summary in Vietnamese. If unable to locate a unique problem, stop without creating a report.",
+        "profileId": "implementer",
+        "profileVersion": 1,
+        "sessionGroup": "implementation-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": true,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [
+          "c",
+          "cpp",
+          "build"
+        ],
+        "outputContract": "leetcode-review-report"
+      },
+      {
+        "id": "finish",
+        "label": "Finish",
+        "type": "finish"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "plan",
+        "outcome": "completed"
+      },
+      {
+        "from": "plan",
+        "to": "approval",
+        "outcome": "completed"
+      },
+      {
+        "from": "approval",
+        "to": "implement",
+        "outcome": "pass"
+      },
+      {
+        "from": "implement",
+        "to": "finish",
+        "outcome": "completed"
+      }
+    ],
+    "bindings": {
+      "implementer": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6.1-terra"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "high"
+        },
+        "fallback": []
+      },
+      "verifier": {
+        "runner": {
+          "mode": "inherit"
+        },
+        "provider": {
+          "mode": "inherit"
+        },
+        "model": {
+          "mode": "inherit"
+        },
+        "reasoning": {
+          "mode": "inherit"
+        },
+        "fallback": []
+      },
+      "fast-planner": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6.1-terra"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "high"
+        },
+        "fallback": []
+      }
+    },
+    "bindingDefaults": {},
+    "sessionGroups": [
+      {
+        "id": "planning-session",
+        "bindingId": "fast-planner"
+      },
+      {
+        "id": "implementation-session",
+        "bindingId": "implementer"
+      }
+    ],
+    "limits": {
+      "maxConcurrency": 1,
+      "maxRepairRounds": 0,
+      "activeTimeSeconds": 1200
+    },
+    "workspacePolicy": "isolated",
+    "outputContract": "leetcode-review-report-for-user-review",
+    "review": "human"
+  },
+  "layout": {},
+  "semanticHash": "c050cb2f0dfd15b7c88930e434d4a77bf876e95aa75a4471ef529bdf43aea70f",
+  "contentHash": "42cf34e3ee1b1ac120d49308ef356c88c1a0478581c46cb109928632e5f8771c",
+  "createdAt": "2026-11-07T08:55:52.945Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "53e8ad32-f3ec-46d1-ab6b-865a3aea6452",
+    "reason": "User requested Codex GPT-6.1 Terra for the flow; binding diff validated and presented."
+  }
+}

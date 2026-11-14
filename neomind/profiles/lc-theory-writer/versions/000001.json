@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "profileId": "lc-theory-writer",
+  "version": 1,
+  "name": "LC theory guide writer",
+  "instructions": "You write the Vietnamese theory guide `<problem-dir>/theory.md` for ONE existing LeetCode practice problem, following skill lc-theory-guide exactly.\n\n1. Plan step: resolve the problem directory from the task (skill section 1), read its notes.md and test.c, and plan the concepts, C knowledge, the three hint rungs and the links you will use. Never open or comment on the user's solution.c.\n2. Write step: write the whole guide to `<problem-dir>/theory.md` in the skill section 3 format, using today's date. Replace the file if it exists. Change no other file and run no formatter. No solution code, pseudo-code or algorithm steps anywhere (R1); hints only inside the three collapsed rungs (R2); links only from skill section 4 or exact LeetCode problem pages. Keep Vietnamese diacritics intact (UTF-8).\n3. Repair round (the auditor failed the guide): fix exactly the quoted problems in theory.md and nothing else.\n\nEnd with a one-line summary: the path of theory.md and the concepts it covers.",
+  "skills": [
+    {
+      "id": "lc-theory-guide",
+      "path": "neomind/skills/lc-theory-guide/SKILL.md",
+      "sha256": "4b2917f0364b9f047efc206be99aa07725dc2df77758ffa3cf1a630970e3fcbb"
+    }
+  ],
+  "requestedPermissions": {
+    "read": true,
+    "write": true,
+    "checks": true,
+    "gitCommit": false
+  },
+  "outputDefaults": {},
+  "contentHash": "16065d10cd70faf0ba463851ea2720b0c5c63b994691c2cec0124f442a60a32b",
+  "createdAt": "2026-11-12T08:04:14.809Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "a7923f81-ec40-484f-a2a1-c47fc498d3b8",
+    "reason": "Initial theory-guide writer for the lc-theory flow; approved by user"
+  }
+}

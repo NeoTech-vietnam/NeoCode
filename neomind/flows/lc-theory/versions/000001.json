@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "flowId": "lc-theory",
+  "version": 1,
+  "name": "LeetCode Theory Guide",
+  "description": "Theory/background guide for an existing LeetCode practice problem (never the solution): a short auto-approved plan resolves the problem directory, a writer creates one Vietnamese theory.md there (concepts, C knowledge, collapsed 3-rung hint ladder, pitfalls, similar problems, verified links only), and an independent auditor checks no-solution, hint, link and fact rules, sending it back on failure. Task: the problem id, slug, title or path, e.g. 217 or contains-duplicate.",
+  "definition": {
+    "startNodeId": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "label": "Start",
+        "type": "start"
+      },
+      {
+        "id": "plan",
+        "label": "Resolve problem (plan)",
+        "type": "agent_task",
+        "goal": "Plan only (no edits). First DO the resolution now: list the directories under c/ and cpp/ and find the ONE existing problem directory the task names, per skill lc-theory-guide section 1, then read its notes.md and test.c (not solution.c). The plan must name the concrete directory (e.g. c/hash/0217_contains-duplicate), the file it will write there (theory.md), the id, title and slug, and the 2-4 concepts, the C topics and the links (from skill section 4 only) the guide will cover. If no single directory matches, say so and plan no write. Scope: exactly one entry, the existing problem directory you resolved, written literally (e.g. c/hash/0217_contains-duplicate), never '.' and never a file. Checks: list ONLY the literal command `git diff --check`; never list tools/build_test.py, because the user's solution may be unfinished and its result is irrelevant to the guide.",
+        "profileId": "lc-theory-writer",
+        "profileVersion": 2,
+        "sessionGroup": "writer-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": false,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "plan"
+      },
+      {
+        "id": "approval",
+        "label": "Auto-approve writing theory.md",
+        "type": "approval",
+        "purpose": "Approved automatically: the writer may create or replace only theory.md in the resolved problem directory",
+        "mode": "auto"
+      },
+      {
+        "id": "write",
+        "label": "Write theory.md",
+        "type": "agent_task",
+        "goal": "Write the planned Vietnamese theory guide to theory.md in the resolved problem directory, in the exact format of skill lc-theory-guide section 3: complexity budget from the constraints, 2-4 background concepts explained in general terms, C knowledge, a 3-rung hint ladder in collapsed details blocks, pitfalls as questions, similar problems, general links. No solution code, pseudo-code or algorithm steps; links only from skill section 4 or exact LeetCode problem pages. Keep Vietnamese diacritics intact (UTF-8). Replace theory.md if it exists; change no other file. Run the planned check.",
+        "profileId": "lc-theory-writer",
+        "profileVersion": 2,
+        "sessionGroup": "writer-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": true,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [
+          "c",
+          "cpp"
+        ],
+        "outputContract": "code-artifacts"
+      },
+      {
+        "id": "repair",
+        "label": "Bounded repair",
+        "type": "repair_scope",
+        "targetReviewId": "audit",
+        "ownerNodeIds": [
+          "write"
+        ],
+        "maxRounds": 2
+      },
+      {
+        "id": "audit",
+        "label": "Guide audit",
+        "type": "review_group",
+        "targetNodeId": "write",
+        "reviewers": [
+          {
+            "id": "theory-auditor",
+            "profileId": "lc-theory-auditor",
+            "profileVersion": 1,
+            "sessionGroup": "audit-session",
+            "required": true,
+            "scope": [
+              "."
+            ]
+          }
+        ],
+        "criteria": [
+          "only theory.md in the resolved problem directory was created or changed; nothing else",
+          "R1 no solution code, pseudo-code, algorithm steps or how-to-apply recipe anywhere",
+          "R2 at most three hint rungs, each in its own collapsed details block, gentlest first, rung 3 names at most a concept family",
+          "R5 facts correct: data-structure complexities, constraints match notes.md, title and id match",
+          "every URL is listed in skill lc-theory-guide section 4 or is the matching LeetCode problem page (judge by reading; inability to open URLs is not a failure)",
+          "all sections of the skill format present and written in Vietnamese"
+        ]
+      },
+      {
+        "id": "finish",
+        "label": "Finish",
+        "type": "finish"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "plan",
+        "outcome": "completed"
+      },
+      {
+        "from": "plan",
+        "to": "approval",
+        "outcome": "completed"
+      },
+      {
+        "from": "approval",
+        "to": "write",
+        "outcome": "pass"
+      },
+      {
+        "from": "write",
+        "to": "repair",
+        "outcome": "completed"
+      },
+      {
+        "from": "repair",
+        "to": "audit",
+        "outcome": "completed"
+      },
+      {
+        "from": "audit",
+        "to": "finish",
+        "outcome": "pass"
+      }
+    ],
+    "bindings": {
+      "implementer": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6-luna"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "high"
+        },
+        "fallback": []
+      },
+      "auditor": {
+        "runner": {
+          "mode": "pinned",
+          "value": "codex"
+        },
+        "provider": {
+          "mode": "pinned",
+          "value": "openai"
+        },
+        "model": {
+          "mode": "pinned",
+          "value": "gpt-6-luna"
+        },
+        "reasoning": {
+          "mode": "pinned",
+          "value": "high"
+        },
+        "fallback": []
+      }
+    },
+    "bindingDefaults": {},
+    "sessionGroups": [
+      {
+        "id": "writer-session",
+        "bindingId": "implementer"
+      },
+      {
+        "id": "audit-session",
+        "bindingId": "auditor"
+      }
+    ],
+    "limits": {
+      "maxConcurrency": 2,
+      "maxRepairRounds": 2,
+      "activeTimeSeconds": 1500
+    },
+    "workspacePolicy": "isolated",
+    "outputContract": "code-changes-for-user-review",
+    "memoryDefaults": "role"
+  },
+  "layout": {},
+  "semanticHash": "9943c0d949e8f7aa8b212317961d4d6f1a40acd9af8409772a64d59727622057",
+  "contentHash": "fc582a84026c72035120e370ebbfe4eed1278da320bbf5c520744e7cf973ada8",
+  "createdAt": "2026-11-12T08:05:10.026Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "a7923f81-ec40-484f-a2a1-c47fc498d3b8",
+    "reason": "Initial lc-theory flow (plan -> auto-approve -> write theory.md -> repair -> audit, codex/gpt-6-luna high); approved by user"
+  }
+}

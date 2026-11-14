@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "profileId": "lc-correctness-reviewer",
+  "name": "LC correctness & edge-case reviewer",
+  "archived": false
+}

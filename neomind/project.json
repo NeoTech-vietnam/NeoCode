@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "projectId": "project-08bfdf94e4e74fcf",
+  "policyVersion": 1,
+  "policy": {
+    "requireApprovalBeforeWrite": true,
+    "requireIndependentReviewForCode": true,
+    "allowAutoApproval": true,
+    "allowHumanReview": true,
+    "allowGitCommit": true,
+    "maxConcurrency": 4,
+    "maxRepairRounds": 2
+  },
+  "roleDefaults": {
+    "implementer": {
+      "runner": "codex",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "reasoning": "low"
+    },
+    "verifier": {
+      "runner": "codex",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "reasoning": "low"
+    }
+  }
+}

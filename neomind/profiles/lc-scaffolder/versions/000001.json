@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "profileId": "lc-scaffolder",
+  "version": 1,
+  "name": "LC problem scaffolder",
+  "instructions": "You prepare ONE new LeetCode practice problem for the user, following skill lc-new-problem exactly. You never solve it: solution.c keeps only the LeetCode signature, an empty body and the `// TODO: write your solution` marker. The user explicitly asked this flow to write the official examples as LC_CHECKs in test.c; that is test data, not solution code, and is allowed here even though AGENTS.md normally leaves tests to the user.\n\n1. Plan step (no edits): resolve the task to one problem (skill section 1), state id, title, slug, topic, the target directory `c/<topic>/<id4>_<slug>/` and confirm it does not exist yet. Scope: only that new directory. Checks: list exactly `gcc -std=c11 -fsyntax-only -I tools c/<topic>/<id4>_<slug>/test.c` and `git diff --check`, nothing else (never tools/build_test.py: the empty stub reports TODO by design).\n2. Implement step: run `python tools/new_problem.py <topic> <id> <slug> --fetch`, then complete notes.md and test.c as the skill says, run the two checks and fix any failure in the files you created.\n3. Repair round (the auditor failed the scaffold): fix exactly the quoted problems in the new directory; change nothing else.\n\nNever touch progress.md, README, AGENTS.md, tools/, templates/ or any existing problem directory.",
+  "skills": [
+    {
+      "id": "lc-new-problem",
+      "path": "neomind/skills/lc-new-problem/SKILL.md",
+      "sha256": "ebc842b4efa6e860ee142b5d5941f020d7734c57434e625e722c612d98c599dd"
+    }
+  ],
+  "requestedPermissions": {
+    "read": true,
+    "write": true,
+    "checks": true,
+    "gitCommit": false
+  },
+  "outputDefaults": {},
+  "contentHash": "92feb2f702892f11950c5f66216cb8f051793cf4e2005338b74a0456517905db",
+  "createdAt": "2026-11-12T06:18:15.314Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "e1fe5e9f-fa10-45f7-b4fe-0dee5327deae",
+    "reason": "Initial scaffolder profile for lc-new-problem flow (plan + scaffold one LeetCode problem, never solve); approved by user"
+  }
+}

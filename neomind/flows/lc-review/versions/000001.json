@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "flowId": "lc-review",
+  "version": 1,
+  "name": "LeetCode Review",
+  "description": "Read-only review of the user's own LeetCode solution: 3 parallel specialist reviewers (correctness, memory/integer safety, complexity), a coach that writes one Vietnamese report with hints only, and an independent rules audit (R1-R5). Task: give the problem directory, e.g. c/hash/0217_contains-duplicate.",
+  "definition": {
+    "startNodeId": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "label": "Start",
+        "type": "start"
+      },
+      {
+        "id": "fork",
+        "label": "Split review",
+        "type": "fork"
+      },
+      {
+        "id": "correctness",
+        "label": "Correctness & edge cases",
+        "type": "agent_task",
+        "goal": "Review correctness of the named problem's solution: run build_test, find counterexamples with traces, propose LC_CHECK lines. No edits, no fixed code.",
+        "profileId": "lc-correctness-reviewer",
+        "profileVersion": 1,
+        "sessionGroup": "correctness-session",
+        "bindingId": "verifier",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "research-report"
+      },
+      {
+        "id": "memory",
+        "label": "Memory & integer safety",
+        "type": "agent_task",
+        "goal": "Review pointers/buffers/\\0, ownership/free and unsigned/overflow/shift issues of the named problem's solution, with sanitizer run if available. No edits, no fixed code.",
+        "profileId": "lc-memory-reviewer",
+        "profileVersion": 1,
+        "sessionGroup": "memory-session",
+        "bindingId": "verifier",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "research-report"
+      },
+      {
+        "id": "complexity",
+        "label": "Complexity",
+        "type": "agent_task",
+        "goal": "Derive time/space complexity incl. call stack of the named problem's solution against its constraints; name only the pattern family for a better bound. No edits, no fixed code.",
+        "profileId": "lc-complexity-reviewer",
+        "profileVersion": 1,
+        "sessionGroup": "complexity-session",
+        "bindingId": "verifier",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "research-report"
+      },
+      {
+        "id": "join",
+        "label": "Collect findings",
+        "type": "join",
+        "requiredBranches": [
+          "correctness",
+          "memory",
+          "complexity"
+        ]
+      },
+      {
+        "id": "coach",
+        "label": "Write review report",
+        "type": "agent_task",
+        "goal": "Merge the three reviewers' findings into one verified Vietnamese review report (lc-hint-ladder format) with first-rung hints only. No edits, no fixed code, no status change.",
+        "profileId": "lc-coach",
+        "profileVersion": 1,
+        "sessionGroup": "coach-session",
+        "bindingId": "implementer",
+        "permissions": {
+          "read": true,
+          "write": false,
+          "checks": true,
+          "gitCommit": false
+        },
+        "writeScopes": [],
+        "outputContract": "research-report"
+      },
+      {
+        "id": "repair",
+        "label": "Bounded repair",
+        "type": "repair_scope",
+        "targetReviewId": "audit",
+        "ownerNodeIds": [
+          "coach"
+        ],
+        "maxRounds": 2
+      },
+      {
+        "id": "audit",
+        "label": "Rules audit (R1-R5)",
+        "type": "review_group",
+        "targetNodeId": "coach",
+        "reviewers": [
+          {
+            "id": "rules-auditor",
+            "profileId": "lc-rules-auditor",
+            "profileVersion": 1,
+            "sessionGroup": "audit-session",
+            "required": true,
+            "scope": [
+              "."
+            ]
+          }
+        ],
+        "criteria": [
+          "R1 no solution code or full algorithm",
+          "R2 one hint per issue",
+          "R3 full firmware checklist covered",
+          "R4 no file or learning-status change",
+          "R5 every claim backed by trace or run",
+          "report in Vietnamese"
+        ]
+      },
+      {
+        "id": "finish",
+        "label": "Finish",
+        "type": "finish"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "fork",
+        "outcome": "completed"
+      },
+      {
+        "from": "fork",
+        "to": "correctness",
+        "outcome": "completed"
+      },
+      {
+        "from": "fork",
+        "to": "memory",
+        "outcome": "completed"
+      },
+      {
+        "from": "fork",
+        "to": "complexity",
+        "outcome": "completed"
+      },
+      {
+        "from": "correctness",
+        "to": "join",
+        "outcome": "completed"
+      },
+      {
+        "from": "memory",
+        "to": "join",
+        "outcome": "completed"
+      },
+      {
+        "from": "complexity",
+        "to": "join",
+        "outcome": "completed"
+      },
+      {
+        "from": "join",
+        "to": "coach",
+        "outcome": "completed"
+      },
+      {
+        "from": "coach",
+        "to": "repair",
+        "outcome": "completed"
+      },
+      {
+        "from": "repair",
+        "to": "audit",
+        "outcome": "completed"
+      },
+      {
+        "from": "audit",
+        "to": "finish",
+        "outcome": "pass"
+      }
+    ],
+    "bindings": {
+      "implementer": {
+        "runner": {
+          "mode": "inherit"
+        },
+        "provider": {
+          "mode": "inherit"
+        },
+        "model": {
+          "mode": "inherit"
+        },
+        "reasoning": {
+          "mode": "inherit"
+        },
+        "fallback": []
+      },
+      "verifier": {
+        "runner": {
+          "mode": "inherit"
+        },
+        "provider": {
+          "mode": "inherit"
+        },
+        "model": {
+          "mode": "inherit"
+        },
+        "reasoning": {
+          "mode": "inherit"
+        },
+        "fallback": []
+      }
+    },
+    "bindingDefaults": {},
+    "sessionGroups": [
+      {
+        "id": "correctness-session",
+        "bindingId": "verifier"
+      },
+      {
+        "id": "memory-session",
+        "bindingId": "verifier"
+      },
+      {
+        "id": "complexity-session",
+        "bindingId": "verifier"
+      },
+      {
+        "id": "coach-session",
+        "bindingId": "implementer"
+      },
+      {
+        "id": "audit-session",
+        "bindingId": "verifier"
+      }
+    ],
+    "limits": {
+      "maxConcurrency": 3,
+      "maxRepairRounds": 2,
+      "activeTimeSeconds": 1800
+    },
+    "workspacePolicy": "isolated",
+    "outputContract": "research-report",
+    "memoryDefaults": "role"
+  },
+  "layout": {},
+  "semanticHash": "106723cb6f518478fccfdf7de0cec87748543a1f1732d4f5d7484177aa202c01",
+  "contentHash": "8881327c5a7d2edec937873b7f825c5f384e4b3ebd67e5f12f6e948b5f3d5e46",
+  "createdAt": "2026-11-11T10:20:43.275Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "8494749c-712b-461b-8d6c-e4e209d92117",
+    "reason": "Initial read-only LeetCode review flow (3 parallel reviewers -> coach -> R1-R5 audit), approved by user"
+  }
+}

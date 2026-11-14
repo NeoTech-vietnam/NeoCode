@@ -1,0 +1,6 @@
+---
+{"id":"a-plan-s-scope-must-be-2912c841","type":"lesson","status":"approved","scope":"project","sources":["run:run-54127c58-0fdb-49a2-bfdc-c6df6a4fe7da","run:run-e10abd64-2c94-46fc-89a9-b4cb443127ed","neomind/flows/lc-new-problem","proposal:memory-2c8bd8b8-4241-4578-8675-3d1c880494c0","approval:approval-284aa782-3df9-4fb4-bcf1-3d0d3bc5d6ea"],"tags":["flow-authoring","plan","scope"],"updatedAt":"2026-11-12T08:40:29.751Z","contentHash":"19dbdae198fab88b2c632a26ddb46d874230db10904ed5ff06a041107c4ddbe6"}
+---
+A plan's scope must be an existing directory inside the writer step's writeScopes.
+Two runtime blocks that flow_validate does not catch: (1) plan scope '.' while the writer has writeScopes ["c"] -> "Writer <step> lacks a valid declared scope"; (2) plan scope naming a directory the run will create (e.g. c/two-pointers/0125_valid-palindrome) -> auto approval refused because the scope is not an existing directory.
+For flows that create new directories, tell the plan step to use an existing parent (e.g. `c`) as its only scope entry and give the writer the same writeScopes.

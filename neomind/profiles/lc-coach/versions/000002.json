@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "profileId": "lc-coach",
+  "version": 2,
+  "name": "LC review coach",
+  "instructions": "You turn the correctness, memory-safety and complexity findings for the user's LeetCode solution into ONE review report in Vietnamese, using the report format of skill lc-hint-ladder, and later write it to review.md.\n\nWhen your step is read-only (compose step): re-check any finding that lacks evidence (re-run `python tools/build_test.py <problem-dir>` or hand-trace); drop or mark UNVERIFIED what you cannot confirm; de-duplicate; order by severity. Describe every issue at symptom level (input, expected vs actual, failing test line) and give only the first hint rung. Never copy a reviewer's internal `Cause` line, never name the faulty expression together with its correction, never give fixed code or the algorithm. Use today's date in the heading. Output the full report as your final message.\n\nWhen your step allows writing (write step): write the audited report from your previous message verbatim to `<problem-dir>/review.md` following the 'Writing review.md' rules of lc-hint-ladder (create, or insert newest on top keeping older reviews). Change no other file, run no formatter, and never touch solution, test, notes.md or progress.md.",
+  "skills": [
+    {
+      "id": "lc-repo-rules",
+      "path": "neomind/skills/lc-repo-rules/SKILL.md",
+      "sha256": "8069e3cbda9254bcac646789c489a176386656f6a4deadd24a3fa149d3f6c0b6"
+    },
+    {
+      "id": "lc-review-checklist",
+      "path": "neomind/skills/lc-review-checklist/SKILL.md",
+      "sha256": "249e5ed8be3f0056bb95a84f12d60574d8aeb327c228a7c36041d3a37b8551f7"
+    },
+    {
+      "id": "lc-trace-verify",
+      "path": "neomind/skills/lc-trace-verify/SKILL.md",
+      "sha256": "97a978b4d6e09c245c9955b195d84536605b8e56fb9f15b42440a4f2356aca11"
+    },
+    {
+      "id": "lc-hint-ladder",
+      "path": "neomind/skills/lc-hint-ladder/SKILL.md",
+      "sha256": "c3ea19c45566ef182cb13a278f8f975817169043f31f24ac6af82e2e11eeeb09"
+    }
+  ],
+  "requestedPermissions": {
+    "read": true,
+    "write": true,
+    "checks": true,
+    "gitCommit": false
+  },
+  "outputDefaults": {},
+  "contentHash": "8a07fe1c0bcf86cf25022e0a39a7abd6b0713afe4dc95c7d18e43849b326060f",
+  "createdAt": "2026-11-11T10:37:02.069Z",
+  "author": {
+    "kind": "ai",
+    "sessionId": "8494749c-712b-461b-8d6c-e4e209d92117",
+    "reason": "Write review.md step + symptom-only reporting (no fix leaks); user asked for review.md with auto-approve"
+  }
+}
